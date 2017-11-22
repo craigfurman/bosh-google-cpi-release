@@ -109,6 +109,7 @@ var _ = Describe("CreateVM", func() {
 				Preemptible:       true,
 				ServiceScopes:     []string{},
 				BackendService:    "fake-backend-service",
+				LocalSSDs:         LocalSSDs{Count: 2, Interface: "scsi"},
 			}
 
 			networks = Networks{
@@ -140,6 +141,7 @@ var _ = Describe("CreateVM", func() {
 				Preemptible:       true,
 				ServiceScopes:     []string{},
 				BackendService:    instance.BackendService{Name: "fake-backend-service", Scheme: "EXTERNAL"},
+				LocalSSDs:         instance.LocalSSDs{Count: 2, Interface: "scsi"},
 			}
 
 			expectedInstanceNetworks = networks.AsInstanceServiceNetworks()

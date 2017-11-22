@@ -40,6 +40,7 @@ type Properties struct {
 	BackendService    BackendService
 	Tags              Tags
 	Labels            Labels
+	LocalSSDs         LocalSSDs
 }
 
 type ServiceScopes []string
@@ -48,4 +49,9 @@ type ServiceAccount string
 type BackendService struct {
 	Name   string
 	Scheme string
+}
+
+type LocalSSDs struct {
+	Count     uint
+	Interface string
 }

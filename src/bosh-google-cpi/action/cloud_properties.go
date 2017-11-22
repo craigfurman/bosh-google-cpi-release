@@ -58,6 +58,7 @@ type VMCloudProperties struct {
 	Labels              instance.Labels  `json:"labels,omitempty"`
 	EphemeralExternalIP *bool            `json:"ephemeral_external_ip,omitempty"`
 	IPForwarding        *bool            `json:"ip_forwarding,omitempty"`
+	LocalSSDs           LocalSSDs        `json:"local_ssds,omitempty"`
 }
 
 func (n VMCloudProperties) Validate() error {
@@ -75,3 +76,8 @@ func (n VMCloudProperties) Validate() error {
 type VMServiceScopes []string
 type VMServiceAccount string
 type VMMetadata map[string]string
+
+type LocalSSDs struct {
+	Count     uint   `json:"count"`
+	Interface string `json:"interface"`
+}
