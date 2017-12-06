@@ -81,6 +81,12 @@ func (cv CreateVM) Run(agentID string, stemcellCID StemcellCID, cloudProps VMClo
 		return "", err
 	}
 
+	// Find the root Disk Type
+	localSSDTypeLink, err := cv.findDiskTypeLink("local-ssd", zone)
+	if err != nil {
+		return "", err
+	}
+
 	// Parse networks
 	vmNetworks := networks.AsInstanceServiceNetworks()
 	if err = vmNetworks.Validate(); err != nil {
@@ -126,6 +132,7 @@ func (cv CreateVM) Run(agentID string, stemcellCID StemcellCID, cloudProps VMClo
 		MachineType:       machineTypeLink,
 		RootDiskSizeGb:    cv.findRootDiskSizeGb(cloudProps.RootDiskSizeGb),
 		RootDiskType:      rootDiskTypeLink,
+		LocalSSDType:      localSSDTypeLink,
 		AutomaticRestart:  cloudProps.AutomaticRestart,
 		OnHostMaintenance: cloudProps.OnHostMaintenance,
 		Preemptible:       cloudProps.Preemptible,
@@ -311,4 +318,16 @@ func (cv CreateVM) findRootDiskTypeLink(diskTypeName string, zone string) (strin
 	}
 
 	return "", nil
+}
+
+func (cv CreateVM) findDiskTypeLink(diskType string, zone string) (string, error) {
+	dt, found, err := cv.diskTypeService.Find(diskType, zone)
+	if err != nil {
+		return "", bosherr.WrapError(err, "Creating vm")
+	}
+	if !found {
+		return "", bosherr.WrapErrorf(err, "Creating vm: Disk Type '%s' does not exists", diskType)
+	}
+
+	return dt.SelfLink, nil
 }

@@ -31,6 +31,7 @@ type Properties struct {
 	MachineType       string
 	RootDiskSizeGb    int
 	RootDiskType      string
+	LocalSSDType      string
 	AutomaticRestart  bool
 	OnHostMaintenance string
 	Preemptible       bool

@@ -28,7 +28,7 @@ func (i GoogleInstanceService) Create(vmProps *Properties, networks Networks, re
 		instanceName = fmt.Sprintf("%s-%s", googleInstanceNamePrefix, uuidStr)
 	}
 	canIPForward := networks.CanIPForward()
-	diskParams := i.createDiskParams(vmProps.Stemcell, vmProps.RootDiskSizeGb, vmProps.RootDiskType, vmProps.LocalSSDs)
+	diskParams := i.createDiskParams(vmProps.Stemcell, vmProps.RootDiskSizeGb, vmProps.RootDiskType, vmProps.LocalSSDType, vmProps.LocalSSDs)
 	metadataParams, err := i.createMatadataParams(instanceName, registryEndpoint, networks)
 	if err != nil {
 		return "", err
@@ -97,7 +97,7 @@ func (i GoogleInstanceService) CleanUp(id string) {
 
 }
 
-func (i GoogleInstanceService) createDiskParams(stemcell string, rootDiskSize int, rootDiskType string, localSSDs LocalSSDs) []*compute.AttachedDisk {
+func (i GoogleInstanceService) createDiskParams(stemcell string, rootDiskSize int, rootDiskType string, localSSDType string, localSSDs LocalSSDs) []*compute.AttachedDisk {
 	if rootDiskSize == 0 {
 		rootDiskSize = defaultRootDiskSizeGb
 	}
@@ -116,10 +116,12 @@ func (i GoogleInstanceService) createDiskParams(stemcell string, rootDiskSize in
 
 	for i := uint(0); i < localSSDs.Count; i++ {
 		localSSD := &compute.AttachedDisk{
+			AutoDelete: true,
 			InitializeParams: &compute.AttachedDiskInitializeParams{
-				DiskType: "local-ssd",
+				DiskType: localSSDType,
 			},
 			Interface: localSSDs.Interface, // TODO what if this is empty / invalid?
+			Type:      "SCRATCH",
 		}
 		disks = append(disks, localSSD)
 	}
